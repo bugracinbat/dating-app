@@ -1,40 +1,51 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { Home, Heart, MessageCircle, User } from 'lucide-react';
+import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
+import { Home, Favorite, Chat, Person } from '@mui/icons-material';
 
 const navItems = [
-  { path: '/swipe', icon: Home, label: 'Swipe' },
-  { path: '/matches', icon: Heart, label: 'Matches' },
-  { path: '/messages', icon: MessageCircle, label: 'Messages' },
-  { path: '/profile', icon: User, label: 'Profile' },
+  { path: '/swipe', icon: Home, label: 'Discover' },
+  { path: '/matches', icon: Favorite, label: 'Matches' },
+  { path: '/messages', icon: Chat, label: 'Messages' },
+  { path: '/profile', icon: Person, label: 'Profile' },
 ];
 
 export default function BottomNav() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const currentIndex = navItems.findIndex(item => item.path === pathname);
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-      <div className="flex justify-around items-center h-16">
-        {navItems.map((item) => {
+    <Paper 
+      sx={{ 
+        position: 'fixed', 
+        bottom: 0, 
+        left: 0, 
+        right: 0,
+        zIndex: 1000
+      }} 
+      elevation={3}
+    >
+      <BottomNavigation
+        value={currentIndex}
+        onChange={(event, newValue) => {
+          router.push(navItems[newValue].path);
+        }}
+        showLabels
+      >
+        {navItems.map((item, index) => {
           const Icon = item.icon;
-          const isActive = pathname === item.path;
-          
           return (
-            <button
+            <BottomNavigationAction
               key={item.path}
-              onClick={() => router.push(item.path)}
-              className={`flex flex-col items-center justify-center w-full h-full ${
-                isActive ? 'text-bumble-yellow' : 'text-gray-500'
-              }`}
-            >
-              <Icon size={24} className={isActive ? 'fill-current' : ''} />
-              <span className="text-xs mt-1">{item.label}</span>
-            </button>
+              label={item.label}
+              icon={<Icon />}
+            />
           );
         })}
-      </div>
-    </nav>
+      </BottomNavigation>
+    </Paper>
   );
 }

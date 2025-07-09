@@ -6,8 +6,37 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { Heart, Eye, EyeOff, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  Box,
+  Container,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  AppBar,
+  Toolbar,
+  IconButton,
+  InputAdornment,
+  Alert,
+  Link,
+  useTheme,
+  CircularProgress,
+  Grid,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select
+} from '@mui/material';
+import {
+  Favorite,
+  ArrowBack,
+  Visibility,
+  VisibilityOff,
+  Person,
+  Email,
+  CalendarMonth
+} from '@mui/icons-material';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -32,6 +61,7 @@ export default function RegisterPage() {
   const { register: registerUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const theme = useTheme();
 
   const {
     register,
@@ -52,177 +82,235 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bumble-gray-light">
-      <nav className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <button
+    <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default }}>
+      <AppBar position="static" elevation={0}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
             onClick={() => router.push('/')}
-            className="flex items-center space-x-2"
+            sx={{ mr: 2 }}
           >
-            <Heart className="w-8 h-8 text-bumble-yellow fill-bumble-yellow" />
-            <span className="text-2xl font-bold text-gray-800">Bumble</span>
-          </button>
-        </div>
-      </nav>
+            <ArrowBack />
+          </IconButton>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Favorite sx={{ mr: 1, color: theme.palette.primary.main }} />
+            <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+              Bumble
+            </Typography>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-      <div className="container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white p-8 rounded-2xl shadow-lg max-w-2xl mx-auto"
-        >
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
-          <p className="text-gray-600 mb-8">Join Bumble to start making connections</p>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  {...register('firstName')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bumble-yellow focus:border-transparent"
-                  placeholder="John"
-                />
-                {errors.firstName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  {...register('lastName')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bumble-yellow focus:border-transparent"
-                  placeholder="Doe"
-                />
-                {errors.lastName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                {...register('email')}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bumble-yellow focus:border-transparent"
-                placeholder="john@example.com"
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
-                </label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  {...register('password')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bumble-yellow focus:border-transparent pr-12"
-                  placeholder="Min 6 characters"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-11 text-gray-500"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password
-                </label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  {...register('confirmPassword')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bumble-yellow focus:border-transparent"
-                  placeholder="Confirm password"
-                />
-                {errors.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date of Birth
-                </label>
-                <input
-                  type="date"
-                  {...register('dateOfBirth')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bumble-yellow focus:border-transparent"
-                />
-                {errors.dateOfBirth && (
-                  <p className="mt-1 text-sm text-red-600">{errors.dateOfBirth.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Gender
-                </label>
-                <select
-                  {...register('gender')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bumble-yellow focus:border-transparent"
-                >
-                  <option value="">Select gender</option>
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                  <option value="OTHER">Other</option>
-                </select>
-                {errors.gender && (
-                  <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>
-                )}
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-bumble-yellow hover:bg-bumble-yellow-dark text-white font-bold py-3 rounded-full transition-colors disabled:opacity-50"
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ width: '100%' }}
+          >
+            <Paper 
+              elevation={3} 
+              sx={{ 
+                p: 4, 
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)'
+              }}
             >
-              {isSubmitting ? 'Creating Account...' : 'Create Account'}
-            </button>
-          </form>
+              <Box sx={{ textAlign: 'center', mb: 4 }}>
+                <Box 
+                  sx={{ 
+                    width: 80, 
+                    height: 80, 
+                    backgroundColor: theme.palette.primary.main,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mx: 'auto',
+                    mb: 2
+                  }}
+                >
+                  <Person sx={{ fontSize: 40, color: 'white' }} />
+                </Box>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  Create Account
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Join Bumble to start making connections
+                </Typography>
+              </Box>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              Already have an account?{' '}
-              <button
-                onClick={() => router.push('/login')}
-                className="text-bumble-yellow hover:underline font-semibold"
-              >
-                Sign in
-              </button>
-            </p>
-          </div>
-        </motion.div>
-      </div>
-    </div>
+              <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="First Name"
+                      {...register('firstName')}
+                      error={!!errors.firstName}
+                      helperText={errors.firstName?.message}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Last Name"
+                      {...register('lastName')}
+                      error={!!errors.lastName}
+                      helperText={errors.lastName?.message}
+                    />
+                  </Grid>
+                </Grid>
+
+                <TextField
+                  fullWidth
+                  label="Email Address"
+                  type="email"
+                  {...register('email')}
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                  sx={{ mt: 3 }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Email color="action" />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+                <Grid container spacing={3} sx={{ mt: 1 }}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Password"
+                      type={showPassword ? 'text' : 'password'}
+                      {...register('password')}
+                      error={!!errors.password}
+                      helperText={errors.password?.message}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              edge="end"
+                            >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Confirm Password"
+                      type={showPassword ? 'text' : 'password'}
+                      {...register('confirmPassword')}
+                      error={!!errors.confirmPassword}
+                      helperText={errors.confirmPassword?.message}
+                    />
+                  </Grid>
+                </Grid>
+
+                <Grid container spacing={3} sx={{ mt: 1 }}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Date of Birth"
+                      type="date"
+                      {...register('dateOfBirth')}
+                      error={!!errors.dateOfBirth}
+                      helperText={errors.dateOfBirth?.message}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <CalendarMonth color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      select
+                      label="Gender"
+                      {...register('gender')}
+                      error={!!errors.gender}
+                      helperText={errors.gender?.message}
+                      defaultValue=""
+                    >
+                      <MenuItem value="">Select gender</MenuItem>
+                      <MenuItem value="MALE">Male</MenuItem>
+                      <MenuItem value="FEMALE">Female</MenuItem>
+                      <MenuItem value="OTHER">Other</MenuItem>
+                    </TextField>
+                  </Grid>
+                </Grid>
+
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                  >
+                    <Alert severity="error" sx={{ mt: 3 }}>
+                      {error}
+                    </Alert>
+                  </motion.div>
+                )}
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={isSubmitting}
+                  sx={{ 
+                    mt: 3,
+                    mb: 2,
+                    py: 1.5,
+                    fontSize: '1.1rem'
+                  }}
+                >
+                  {isSubmitting ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    'Create Account'
+                  )}
+                </Button>
+
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Already have an account?{' '}
+                    <Link
+                      component="button"
+                      type="button"
+                      onClick={() => router.push('/login')}
+                      sx={{ 
+                        color: theme.palette.primary.main,
+                        fontWeight: 'bold',
+                        textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline'
+                        }
+                      }}
+                    >
+                      Sign in
+                    </Link>
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </motion.div>
+        </Box>
+      </Container>
+    </Box>
   );
 }
