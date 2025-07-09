@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  firstName     String
+  lastName      String
+  dateOfBirth   DateTime
+  gender        Gender
+  bio           String?
+  location      String?
+  interests     String[]
+  photos        Photo[]
+  
+  sentLikes     Like[]    @relation("SentLikes")
+  receivedLikes Like[]    @relation("ReceivedLikes")
+  
+  matches1      Match[]   @relation("Match1")
+  matches2      Match[]   @relation("Match2")
+  
+  sentMessages  Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  url       String
+  isPrimary Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id         String   @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  isSuper    Boolean  @default(false)
+  fromUser   User     @relation("SentLikes", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser     User     @relation("ReceivedLikes", fields: [toUserId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  
+  @@unique([fromUserId, toUserId])
+}
+
+model Match {
+  id              String    @id @default(cuid())
+  user1Id         String
+  user2Id         String
+  user1           User      @relation("Match1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2           User      @relation("Match2", fields: [user2Id], references: [id], onDelete: Cascade)
+  
+  canUser1Message Boolean   @default(true)
+  canUser2Message Boolean   @default(true)
+  
+  messages        Message[]
+  createdAt       DateTime  @default(now())
+  
+  @@unique([user1Id, user2Id])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  fromUserId String
+  toUserId   String
+  matchId    String
+  fromUser   User     @relation("SentMessages", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser     User     @relation("ReceivedMessages", fields: [toUserId], references: [id], onDelete: Cascade)
+  match      Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
